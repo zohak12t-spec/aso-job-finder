@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <rect width="64" height="64" rx="16" fill="#1a1816"/>
+  <!-- Briefcase Top Handle -->
+  <path d="M24 22V18A4 4 0 0 1 28 14H36A4 4 0 0 1 40 18V22" fill="none" stroke="#fefefe" stroke-width="4" stroke-linecap="round"/>
+  <!-- Briefcase Body -->
+  <rect x="14" y="22" width="36" height="26" rx="5" fill="#fefefe"/>
+  <!-- Growth Arrow Cutout -->
+  <path d="M22 38L30 30L34 34L42 26" fill="none" stroke="#1a1816" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <polyline points="36 26 42 26 42 32" fill="none" stroke="#1a1816" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

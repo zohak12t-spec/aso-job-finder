@@ -9,7 +9,7 @@ REPORTS_DIR = BASE_DIR / "reports"
 def generate_reports(jobs: list) -> tuple:
     """
     Generates local jobs_report.html/md and standalone dist/index.html 
-    using requested custom color scheme (#f5f3f0 canvas, #fefefe cards, #1a1816 primary buttons).
+    with custom SVG favicon app icon and custom color scheme (#f5f3f0 canvas, #fefefe cards, #1a1816 primary buttons).
     """
     DIST_DIR.mkdir(exist_ok=True)
     REPORTS_DIR.mkdir(exist_ok=True)
@@ -29,6 +29,8 @@ def generate_reports(jobs: list) -> tuple:
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ASO & App Growth Jobs</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="apple-touch-icon" href="favicon.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -110,7 +112,13 @@ def generate_reports(jobs: list) -> tuple:
             <div class="header-container">
                 <div class="brand">
                     <div class="brand-logo">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+                        <svg width="24" height="24" viewBox="0 0 64 64" fill="none">
+                            <rect width="64" height="64" rx="16" fill="#1a1816"/>
+                            <path d="M24 22V18A4 4 0 0 1 28 14H36A4 4 0 0 1 40 18V22" stroke="#fefefe" stroke-width="4" stroke-linecap="round"/>
+                            <rect x="14" y="22" width="36" height="26" rx="5" fill="#fefefe"/>
+                            <path d="M22 38L30 30L34 34L42 26" stroke="#1a1816" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <polyline points="36 26 42 26 42 32" stroke="#1a1816" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
                     </div>
                     <div class="brand-text">
                         <h2>ASO & App Growth Jobs</h2>
