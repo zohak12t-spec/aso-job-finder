@@ -9,7 +9,7 @@ REPORTS_DIR = BASE_DIR / "reports"
 def generate_reports(jobs: list) -> tuple:
     """
     Generates local jobs_report.html/md and standalone dist/index.html 
-    with custom SVG favicon app icon and custom color scheme (#f5f3f0 canvas, #fefefe cards, #1a1816 primary buttons).
+    with static Cloudflare notification modal for platform scraping triggers.
     """
     DIST_DIR.mkdir(exist_ok=True)
     REPORTS_DIR.mkdir(exist_ok=True)
@@ -19,10 +19,8 @@ def generate_reports(jobs: list) -> tuple:
     md_path = REPORTS_DIR / "jobs_report.md"
     dist_html_path = DIST_DIR / "index.html"
 
-    # Convert jobs list to JSON string for embedding
     jobs_json_embedded = json.dumps(jobs, indent=2, ensure_ascii=False)
 
-    # Standalone HTML Dashboard for Cloudflare Pages
     dist_html_content = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -94,6 +92,16 @@ def generate_reports(jobs: list) -> tuple:
         .btn-apply {{ display: inline-flex; align-items: center; gap: 6px; background-color: var(--brand-dark); color: #fefefe; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: 600; }}
         .btn-apply:hover {{ opacity: 0.9; }}
         .app-footer {{ text-align: center; padding: 24px; font-size: 13px; color: var(--text-tertiary); border-top: 1px solid var(--border-subtle); }}
+
+        /* Modal Popup */
+        .modal-overlay {{ position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(26,24,22,0.6); backdrop-filter: blur(4px); z-index: 100; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.2s ease; }}
+        .modal-overlay.active {{ opacity: 1; pointer-events: auto; }}
+        .modal-box {{ background: #fefefe; border-radius: 14px; padding: 28px; max-width: 440px; width: 90%; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.2); }}
+        .modal-box h3 {{ font-size: 18px; font-weight: 600; margin-bottom: 8px; color: #1a1816; }}
+        .modal-box p {{ font-size: 13px; color: #66625d; line-height: 1.5; margin-bottom: 20px; }}
+        .modal-actions {{ display: flex; gap: 10px; justify-content: center; }}
+        .btn-modal-close {{ background: #1a1816; color: #fefefe; border: none; padding: 8px 18px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 13px; }}
+
         @media (max-width: 768px) {{
             .header-container {{ flex-direction: column; align-items: stretch; }}
             .btn-search {{ width: 100%; padding: 12px 18px; font-size: 15px; }}
@@ -127,7 +135,7 @@ def generate_reports(jobs: list) -> tuple:
                 </div>
 
                 <div class="action-wrapper">
-                    <button class="btn-search" onclick="location.reload()">
+                    <button class="btn-search" id="fetchJobsBtn">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
                         <span>Fetch Latest Jobs from Platforms</span>
                     </button>
@@ -188,6 +196,17 @@ def generate_reports(jobs: list) -> tuple:
         </footer>
     </div>
 
+    <!-- Modal Popup for Cloudflare static environment -->
+    <div id="statusModal" class="modal-overlay">
+        <div class="modal-box">
+            <h3>Cloud Automated Fetch</h3>
+            <p>This Cloudflare site is updated automatically every 3 hours by GitHub Actions! You can also trigger an instant live refresh via GitHub Actions or run locally.</p>
+            <div class="modal-actions">
+                <button class="btn-modal-close" onclick="closeModal()">Got it</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         const allJobs = {jobs_json_embedded};
         let activeTab = "all";
@@ -198,6 +217,17 @@ def generate_reports(jobs: list) -> tuple:
         document.addEventListener("DOMContentLoaded", () => {{
             const dateFilter = document.getElementById("dateFilter");
             const searchInput = document.getElementById("searchInput");
+            const fetchJobsBtn = document.getElementById("fetchJobsBtn");
+
+            if (fetchJobsBtn) {{
+                fetchJobsBtn.addEventListener("click", () => {{
+                    // Try local REST API first, if fails show modal
+                    fetch("/api/scrape", {{ method: "POST", headers: {{"Content-Type": "application/json"}}, body: JSON.stringify({{dry_run: false}}) }})
+                    .then(res => res.json())
+                    .then(data => {{ if (data.success) location.reload(); else showModal(); }})
+                    .catch(() => showModal());
+                }});
+            }}
 
             document.querySelectorAll(".tab-item").forEach(btn => {{
                 btn.addEventListener("click", () => {{
@@ -221,6 +251,14 @@ def generate_reports(jobs: list) -> tuple:
             searchInput.addEventListener("input", (e) => {{ searchQuery = e.target.value.toLowerCase().trim(); render(); }});
             render();
         }});
+
+        function showModal() {{
+            document.getElementById("statusModal").classList.add("active");
+        }}
+
+        function closeModal() {{
+            document.getElementById("statusModal").classList.remove("active");
+        }}
 
         function isLocal(j) {{
             const s = (j.source || "").toLowerCase();
