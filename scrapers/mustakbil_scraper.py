@@ -42,6 +42,9 @@ class MustakbilScraper(BaseScraper):
                     loc_elem = item.select_one(".location")
                     location = loc_elem.text.strip() if loc_elem else "Pakistan"
 
+                    date_elem = item.select_one(".date") or item.select_one("time") or item.select_one(".posted-date")
+                    pub_date = date_elem.text.strip() if date_elem else ""
+
                     if title and link:
                         found_jobs.append(
                             Job(
@@ -49,7 +52,8 @@ class MustakbilScraper(BaseScraper):
                                 link=link,
                                 source="Mustakbil.com (Pakistan)",
                                 company=company,
-                                location=location
+                                location=location,
+                                pub_date=pub_date
                             )
                         )
             except Exception as e:

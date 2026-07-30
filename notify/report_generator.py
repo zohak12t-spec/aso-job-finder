@@ -269,17 +269,24 @@ def generate_reports(jobs: list) -> tuple:
         function formatPostingDate(job) {{
             const raw = job.pub_date || job.added_at;
             if (!raw) return 'Recently Posted';
-            const lower = String(raw).toLowerCase().trim();
-            if (lower.includes('ago') || lower.includes('just') || lower.includes('yesterday') || lower.includes('today')) return raw;
-            const parsed = new Date(raw);
+            const str = String(raw).trim();
+            const lower = str.toLowerCase();
+            if (lower.includes('ago') || lower.includes('just') || lower.includes('yesterday') || lower.includes('today')) {{
+                return str.charAt(0).toUpperCase() + str.slice(1);
+            }}
+            const parsed = new Date(str);
             if (!isNaN(parsed.getTime())) {{
-                const diffDays = Math.floor(Math.abs(new Date() - parsed) / (1000 * 60 * 60 * 24));
-                if (diffDays === 0) return 'Posted Today';
+                const now = new Date();
+                const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                const jobDate = new Date(parsed.getFullYear(), parsed.getMonth(), parsed.getDate());
+                const diffMs = today - jobDate;
+                const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
+                if (diffDays <= 0) return 'Posted Today';
                 if (diffDays === 1) return 'Posted 1 day ago';
                 if (diffDays <= 30) return `Posted ${{diffDays}} days ago`;
-                return 'Posted ' + parsed.toLocaleDateString(undefined, {{ month: 'short', day: 'numeric', year: 'numeric' }});
+                return 'Posted ' + parsed.toLocaleDateString('en-US', {{ month: 'short', day: 'numeric', year: 'numeric' }});
             }}
-            return raw;
+            return str;
         }}
 
         function isWithinDays(job, maxDays) {{
@@ -288,13 +295,28 @@ def generate_reports(jobs: list) -> tuple:
             if (!raw) return true;
             const lower = String(raw).toLowerCase();
             if (lower.includes('ago')) {{
-                const match = lower.match(/(\\d+)/);
-                if (match) return parseInt(match[1], 10) <= parseFloat(maxDays);
+                if (lower.includes('hour') || lower.includes('minute') || lower.includes('just')) return true;
+                if (lower.includes('week')) {{
+                    const match = lower.match(/(\\d+)/);
+                    const weeks = match ? parseInt(match[1], 10) : 1;
+                    return (weeks * 7) <= parseFloat(maxDays);
+                }}
+                if (lower.includes('day')) {{
+                    const match = lower.match(/(\\d+)/);
+                    const days = match ? parseInt(match[1], 10) : 1;
+                    return days <= parseFloat(maxDays);
+                }}
+                if (lower.includes('month')) {{
+                    const match = lower.match(/(\\d+)/);
+                    const months = match ? parseInt(match[1], 10) : 1;
+                    return (months * 30) <= parseFloat(maxDays);
+                }}
             }}
             const parsed = new Date(raw);
             if (!isNaN(parsed.getTime())) {{
-                const diffDays = Math.abs(new Date() - parsed) / (1000 * 60 * 60 * 24);
-                return diffDays <= parseFloat(maxDays);
+                const diffMs = Math.abs(new Date() - parsed);
+                const diffDays = diffMs / (1000 * 60 * 60 * 24);
+                return diffDays <= (parseFloat(maxDays) + 0.5);
             }}
             return true;
         }}
