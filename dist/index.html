@@ -9,59 +9,63 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-main: #0b0f19;
-            --bg-surface: #111827;
-            --bg-card: #1f2937;
-            --bg-card-hover: #263346;
-            --border-subtle: #374151;
-            --text-primary: #f9fafb;
-            --text-secondary: #9ca3af;
-            --text-tertiary: #6b7280;
-            --brand-blue: #2563eb;
-            --brand-blue-hover: #1d4ed8;
+            --bg-main: #f5f3f0;
+            --bg-surface: #fefefe;
+            --bg-card: #fefefe;
+            --bg-card-hover: #ffffff;
+            --border-subtle: rgba(26, 24, 22, 0.07);
+            --border-hover: rgba(26, 24, 22, 0.15);
+            --text-primary: #1a1816;
+            --text-secondary: #66625d;
+            --text-tertiary: #8c8780;
+            --brand-dark: #1a1816;
+            --brand-dark-hover: #2e2b28;
             --font-family: 'Inter', 'Plus Jakarta Sans', sans-serif;
             --radius-md: 10px;
             --radius-lg: 14px;
+            --shadow-smooth: 0 4px 20px rgba(26, 24, 22, 0.03);
+            --shadow-hover: 0 8px 30px rgba(26, 24, 22, 0.07);
         }
         * { box-sizing: border-box; margin: 0; padding: 0; text-transform: none !important; }
-        body { background-color: var(--bg-main); color: var(--text-primary); font-family: var(--font-family); min-height: 100vh; line-height: 1.5; }
-        .app-header { background-color: var(--bg-surface); border-bottom: 1px solid var(--border-subtle); padding: 16px 0; }
+        body { background-color: var(--bg-main); color: var(--text-primary); font-family: var(--font-family); min-height: 100vh; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+        .app-layout { display: flex; flex-direction: column; min-height: 100vh; }
+        .app-header { background-color: var(--bg-surface); border-bottom: 1px solid var(--border-subtle); padding: 18px 0; }
         .header-container { max-width: 1200px; margin: 0 auto; padding: 0 20px; display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
         .brand { display: flex; align-items: center; gap: 12px; }
-        .brand-logo { width: 40px; height: 40px; background-color: rgba(37, 99, 235, 0.12); border: 1px solid rgba(37, 99, 235, 0.3); color: var(--brand-blue); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .brand-logo { width: 40px; height: 40px; background-color: var(--bg-main); color: var(--brand-dark); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         .brand-text h2 { font-size: 19px; font-weight: 600; color: var(--text-primary); }
         .brand-text p { font-size: 13px; color: var(--text-secondary); }
-        .btn-search { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background-color: var(--brand-blue); color: #ffffff; border: none; font-family: var(--font-family); font-size: 14px; font-weight: 600; padding: 10px 18px; border-radius: var(--radius-md); cursor: pointer; white-space: nowrap; text-decoration: none; }
-        .btn-search:hover { background-color: var(--brand-blue-hover); }
-        .main-content { max-width: 1200px; width: 100%; margin: 0 auto; padding: 24px 20px 60px 20px; }
-        .toolbar-panel { background-color: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; margin-bottom: 20px; }
+        .btn-search { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background-color: var(--brand-dark); color: #fefefe; border: none; font-family: var(--font-family); font-size: 14px; font-weight: 600; padding: 10px 20px; border-radius: var(--radius-md); cursor: pointer; white-space: nowrap; text-decoration: none; box-shadow: 0 2px 8px rgba(26, 24, 22, 0.12); }
+        .btn-search:hover { background-color: var(--brand-dark-hover); }
+        .main-content { max-width: 1200px; width: 100%; margin: 0 auto; padding: 28px 20px 60px 20px; flex: 1; }
+        .toolbar-panel { background-color: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 12px 18px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; margin-bottom: 20px; box-shadow: var(--shadow-smooth); }
         .toolbar-left, .toolbar-right { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-        .tab-group { display: flex; background-color: var(--bg-main); padding: 4px; border-radius: var(--radius-md); border: 1px solid var(--border-subtle); max-width: 100%; overflow-x: auto; }
+        .tab-group { display: flex; background-color: var(--bg-main); padding: 4px; border-radius: var(--radius-md); max-width: 100%; overflow-x: auto; }
         .tab-item { background: transparent; border: none; color: var(--text-secondary); font-family: var(--font-family); font-size: 13px; font-weight: 500; padding: 7px 14px; border-radius: 6px; cursor: pointer; white-space: nowrap; }
-        .tab-item.active { background-color: var(--bg-card); color: var(--text-primary); font-weight: 600; }
-        .select-input { background-color: var(--bg-main); border: 1px solid var(--border-subtle); color: var(--text-primary); font-family: var(--font-family); font-size: 13px; padding: 8px 12px; border-radius: var(--radius-md); outline: none; }
+        .tab-item.active { background-color: var(--brand-dark); color: #fefefe; font-weight: 600; }
+        .select-input { background-color: var(--bg-main); border: 1px solid var(--border-subtle); color: var(--text-primary); font-family: var(--font-family); font-size: 13px; padding: 8px 12px; border-radius: var(--radius-md); outline: none; cursor: pointer; }
         .search-input-box { display: flex; align-items: center; gap: 8px; background-color: var(--bg-main); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 8px 14px; width: 240px; color: var(--text-tertiary); }
         .search-input-box input { background: transparent; border: none; outline: none; color: var(--text-primary); font-family: var(--font-family); font-size: 13px; width: 100%; }
         .tags-filter-row { display: flex; align-items: center; gap: 10px; margin-bottom: 24px; flex-wrap: wrap; }
         .chip-item { background-color: var(--bg-surface); border: 1px solid var(--border-subtle); color: var(--text-secondary); font-family: var(--font-family); font-size: 12px; padding: 5px 12px; border-radius: 20px; cursor: pointer; }
-        .chip-item.active { background-color: rgba(37, 99, 235, 0.15); border-color: rgba(37, 99, 235, 0.4); color: #60a5fa; font-weight: 600; }
+        .chip-item.active { background-color: var(--brand-dark); border-color: var(--brand-dark); color: #fefefe; font-weight: 600; }
         .results-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; flex-wrap: wrap; gap: 8px; }
         .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 18px; }
-        .empty-state-box { grid-column: 1 / -1; background-color: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 48px 24px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; }
+        .empty-state-box { grid-column: 1 / -1; background-color: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 48px 24px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; box-shadow: var(--shadow-smooth); }
         .empty-state-box h4 { font-size: 17px; font-weight: 600; color: var(--text-primary); }
         .empty-state-box p { font-size: 13px; color: var(--text-secondary); max-width: 460px; }
-        .job-card { background-color: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 20px; display: flex; flex-direction: column; justify-content: space-between; }
-        .job-card:hover { background-color: var(--bg-card-hover); border-color: var(--border-highlight); }
-        .source-tag { display: inline-block; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; background-color: rgba(37, 99, 235, 0.15); color: #60a5fa; margin-bottom: 10px; }
-        .job-title { font-size: 16px; font-weight: 600; line-height: 1.35; margin-bottom: 10px; }
+        .job-card { background-color: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 22px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: var(--shadow-smooth); transition: all 0.15s ease; }
+        .job-card:hover { background-color: var(--bg-card-hover); border-color: var(--border-hover); box-shadow: var(--shadow-hover); transform: translateY(-2px); }
+        .source-tag { display: inline-block; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; background-color: var(--bg-main); color: var(--text-secondary); margin-bottom: 12px; }
+        .job-title { font-size: 17px; font-weight: 600; line-height: 1.35; margin-bottom: 10px; }
         .job-title a { color: var(--text-primary); text-decoration: none; }
         .meta-row { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text-secondary); margin-bottom: 4px; }
-        .skills-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
-        .skill-badge { background-color: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.08); color: #d1d5db; font-size: 11px; padding: 2px 8px; border-radius: 4px; }
-        .card-footer { padding-top: 14px; border-top: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center; }
+        .skills-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
+        .skill-badge { background-color: var(--bg-main); color: var(--text-secondary); font-size: 11px; padding: 3px 9px; border-radius: 4px; font-weight: 500; }
+        .card-footer { padding-top: 16px; border-top: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center; }
         .date-text { font-size: 12px; color: var(--text-tertiary); }
-        .btn-apply { display: inline-flex; align-items: center; gap: 6px; background-color: rgba(37, 99, 235, 0.12); color: #60a5fa; border: 1px solid rgba(37, 99, 235, 0.3); padding: 7px 14px; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: 600; }
-        .btn-apply:hover { background-color: var(--brand-blue); color: #ffffff; }
+        .btn-apply { display: inline-flex; align-items: center; gap: 6px; background-color: var(--brand-dark); color: #fefefe; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: 600; }
+        .btn-apply:hover { opacity: 0.9; }
         .app-footer { text-align: center; padding: 24px; font-size: 13px; color: var(--text-tertiary); border-top: 1px solid var(--border-subtle); }
         @media (max-width: 768px) {
             .header-container { flex-direction: column; align-items: stretch; }
@@ -71,7 +75,7 @@
             .tab-group { width: 100%; justify-content: space-around; }
             .search-input-box { width: 100%; }
             .cards-grid { grid-template-columns: 1fr; }
-            .main-content { padding: 16px 14px 40px 14px; }
+            .main-content { padding: 18px 14px 40px 14px; }
         }
     </style>
 </head>
@@ -140,7 +144,7 @@
             <section class="results-container">
                 <div class="results-header">
                     <h3 id="resultsSummaryTitle">Matching Job Opportunities</h3>
-                    <span class="status-meta">Last updated: July 30, 2026 - 01:31 PM</span>
+                    <span class="status-meta">Last updated: July 30, 2026 - 01:33 PM</span>
                 </div>
                 <div id="jobsGrid" class="cards-grid"></div>
             </section>
