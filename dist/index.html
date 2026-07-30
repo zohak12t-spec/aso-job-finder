@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ASO & App Growth Jobs</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -25,39 +25,54 @@
         }
         * { box-sizing: border-box; margin: 0; padding: 0; text-transform: none !important; }
         body { background-color: var(--bg-main); color: var(--text-primary); font-family: var(--font-family); min-height: 100vh; line-height: 1.5; }
-        .app-header { background-color: var(--bg-surface); border-bottom: 1px solid var(--border-subtle); padding: 20px 0; }
-        .header-container { max-width: 1200px; margin: 0 auto; padding: 0 24px; display: flex; justify-content: space-between; align-items: center; gap: 20px; }
-        .brand { display: flex; align-items: center; gap: 14px; }
-        .brand-logo { width: 42px; height: 42px; background-color: rgba(37, 99, 235, 0.12); border: 1px solid rgba(37, 99, 235, 0.3); color: var(--brand-blue); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; }
-        .brand-text h2 { font-size: 20px; font-weight: 600; color: var(--text-primary); }
+        .app-header { background-color: var(--bg-surface); border-bottom: 1px solid var(--border-subtle); padding: 16px 0; }
+        .header-container { max-width: 1200px; margin: 0 auto; padding: 0 20px; display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+        .brand { display: flex; align-items: center; gap: 12px; }
+        .brand-logo { width: 40px; height: 40px; background-color: rgba(37, 99, 235, 0.12); border: 1px solid rgba(37, 99, 235, 0.3); color: var(--brand-blue); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .brand-text h2 { font-size: 19px; font-weight: 600; color: var(--text-primary); }
         .brand-text p { font-size: 13px; color: var(--text-secondary); }
-        .main-content { max-width: 1200px; width: 100%; margin: 0 auto; padding: 32px 24px 60px 24px; }
-        .toolbar-panel { background-color: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 14px 18px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 20px; }
+        .btn-search { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background-color: var(--brand-blue); color: #ffffff; border: none; font-family: var(--font-family); font-size: 14px; font-weight: 600; padding: 10px 18px; border-radius: var(--radius-md); cursor: pointer; white-space: nowrap; text-decoration: none; }
+        .btn-search:hover { background-color: var(--brand-blue-hover); }
+        .main-content { max-width: 1200px; width: 100%; margin: 0 auto; padding: 24px 20px 60px 20px; }
+        .toolbar-panel { background-color: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; margin-bottom: 20px; }
         .toolbar-left, .toolbar-right { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-        .tab-group { display: flex; background-color: var(--bg-main); padding: 4px; border-radius: var(--radius-md); border: 1px solid var(--border-subtle); }
-        .tab-item { background: transparent; border: none; color: var(--text-secondary); font-family: var(--font-family); font-size: 13px; font-weight: 500; padding: 7px 14px; border-radius: 6px; cursor: pointer; }
+        .tab-group { display: flex; background-color: var(--bg-main); padding: 4px; border-radius: var(--radius-md); border: 1px solid var(--border-subtle); max-width: 100%; overflow-x: auto; }
+        .tab-item { background: transparent; border: none; color: var(--text-secondary); font-family: var(--font-family); font-size: 13px; font-weight: 500; padding: 7px 14px; border-radius: 6px; cursor: pointer; white-space: nowrap; }
         .tab-item.active { background-color: var(--bg-card); color: var(--text-primary); font-weight: 600; }
         .select-input { background-color: var(--bg-main); border: 1px solid var(--border-subtle); color: var(--text-primary); font-family: var(--font-family); font-size: 13px; padding: 8px 12px; border-radius: var(--radius-md); outline: none; }
-        .search-input-box { display: flex; align-items: center; gap: 8px; background-color: var(--bg-main); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 8px 14px; width: 260px; color: var(--text-tertiary); }
+        .search-input-box { display: flex; align-items: center; gap: 8px; background-color: var(--bg-main); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 8px 14px; width: 240px; color: var(--text-tertiary); }
         .search-input-box input { background: transparent; border: none; outline: none; color: var(--text-primary); font-family: var(--font-family); font-size: 13px; width: 100%; }
-        .tags-filter-row { display: flex; align-items: center; gap: 12px; margin-bottom: 28px; flex-wrap: wrap; }
+        .tags-filter-row { display: flex; align-items: center; gap: 10px; margin-bottom: 24px; flex-wrap: wrap; }
         .chip-item { background-color: var(--bg-surface); border: 1px solid var(--border-subtle); color: var(--text-secondary); font-family: var(--font-family); font-size: 12px; padding: 5px 12px; border-radius: 20px; cursor: pointer; }
         .chip-item.active { background-color: rgba(37, 99, 235, 0.15); border-color: rgba(37, 99, 235, 0.4); color: #60a5fa; font-weight: 600; }
-        .results-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
-        .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 20px; }
-        .job-card { background-color: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 22px; display: flex; flex-direction: column; justify-content: space-between; }
+        .results-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; flex-wrap: wrap; gap: 8px; }
+        .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 18px; }
+        .empty-state-box { grid-column: 1 / -1; background-color: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 48px 24px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; }
+        .empty-state-box h4 { font-size: 17px; font-weight: 600; color: var(--text-primary); }
+        .empty-state-box p { font-size: 13px; color: var(--text-secondary); max-width: 460px; }
+        .job-card { background-color: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 20px; display: flex; flex-direction: column; justify-content: space-between; }
         .job-card:hover { background-color: var(--bg-card-hover); border-color: var(--border-highlight); }
-        .source-tag { display: inline-block; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; background-color: rgba(37, 99, 235, 0.15); color: #60a5fa; margin-bottom: 12px; }
-        .job-title { font-size: 17px; font-weight: 600; line-height: 1.35; margin-bottom: 10px; }
+        .source-tag { display: inline-block; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; background-color: rgba(37, 99, 235, 0.15); color: #60a5fa; margin-bottom: 10px; }
+        .job-title { font-size: 16px; font-weight: 600; line-height: 1.35; margin-bottom: 10px; }
         .job-title a { color: var(--text-primary); text-decoration: none; }
         .meta-row { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text-secondary); margin-bottom: 4px; }
-        .skills-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
+        .skills-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
         .skill-badge { background-color: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.08); color: #d1d5db; font-size: 11px; padding: 2px 8px; border-radius: 4px; }
-        .card-footer { padding-top: 16px; border-top: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center; }
+        .card-footer { padding-top: 14px; border-top: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center; }
         .date-text { font-size: 12px; color: var(--text-tertiary); }
         .btn-apply { display: inline-flex; align-items: center; gap: 6px; background-color: rgba(37, 99, 235, 0.12); color: #60a5fa; border: 1px solid rgba(37, 99, 235, 0.3); padding: 7px 14px; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: 600; }
         .btn-apply:hover { background-color: var(--brand-blue); color: #ffffff; }
         .app-footer { text-align: center; padding: 24px; font-size: 13px; color: var(--text-tertiary); border-top: 1px solid var(--border-subtle); }
+        @media (max-width: 768px) {
+            .header-container { flex-direction: column; align-items: stretch; }
+            .btn-search { width: 100%; padding: 12px 18px; font-size: 15px; }
+            .toolbar-panel { flex-direction: column; align-items: stretch; }
+            .toolbar-left, .toolbar-right { width: 100%; }
+            .tab-group { width: 100%; justify-content: space-around; }
+            .search-input-box { width: 100%; }
+            .cards-grid { grid-template-columns: 1fr; }
+            .main-content { padding: 16px 14px 40px 14px; }
+        }
     </style>
 </head>
 <body>
@@ -72,6 +87,13 @@
                         <h2>ASO & App Growth Jobs</h2>
                         <p>Curated roles for Islamabad, Rawalpindi, and Remote</p>
                     </div>
+                </div>
+
+                <div class="action-wrapper">
+                    <button class="btn-search" onclick="location.reload()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+                        <span>Fetch Latest Jobs from Platforms</span>
+                    </button>
                 </div>
             </div>
         </header>
@@ -118,7 +140,7 @@
             <section class="results-container">
                 <div class="results-header">
                     <h3 id="resultsSummaryTitle">Matching Job Opportunities</h3>
-                    <span class="status-meta">Last updated: July 30, 2026 - 12:57 PM</span>
+                    <span class="status-meta">Last updated: July 30, 2026 - 01:31 PM</span>
                 </div>
                 <div id="jobsGrid" class="cards-grid"></div>
             </section>
@@ -200,7 +222,16 @@
 
             const grid = document.getElementById("jobsGrid");
             if (filtered.length === 0) {
-                grid.innerHTML = '<div style="grid-column: 1/-1; padding:40px; text-align:center; color:#9ca3af;">No jobs match this filter.</div>';
+                grid.innerHTML = `
+                    <div class="empty-state-box">
+                        <h4>No Job Listings Found for this Filter</h4>
+                        <p>Try changing your location tab or timeframe, or click below to refresh live listings.</p>
+                        <button class="btn-search" onclick="location.reload()" style="margin-top: 8px;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+                            <span>Fetch Latest Jobs from Platforms</span>
+                        </button>
+                    </div>
+                `;
                 return;
             }
 
@@ -208,14 +239,14 @@
                 const title = j.title || "Job Title";
                 const link = j.url || j.link || "#";
                 const company = j.company || "Employer";
-                const location = j.location || (isLocal(j) ? "Islamabad / Rawalpindi" : "Remote");
+                const location = j.location || (isLocal(j) ? "Islamabad / Rawalpindi, Pakistan" : "Remote Position");
                 const source = j.source || "LinkedIn";
                 const skills = (j.matched_keywords || []).map(k => `<span class="skill-badge">${k}</span>`).join("");
                 const date = j.added_at ? new Date(j.added_at).toLocaleDateString(undefined, {month:'short', day:'numeric', year:'numeric'}) : 'Fresh';
 
                 return `
                     <div class="job-card">
-                        <div>
+                        <div class="card-main">
                             <span class="source-tag">${source}</span>
                             <h4 class="job-title"><a href="${link}" target="_blank">${title}</a></h4>
                             <div class="meta-row"><span>🏢 ${company}</span></div>

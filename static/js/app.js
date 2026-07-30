@@ -15,10 +15,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const lastUpdated = document.getElementById("lastUpdated");
     const resultsSummaryTitle = document.getElementById("resultsSummaryTitle");
 
-    // SVG Icon Templates
+    // SVG Icons
     const companySvg = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>`;
     const locationSvg = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>`;
     const externalLinkSvg = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>`;
+    const refreshSvg = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>`;
 
     // Load initial jobs
     loadSavedJobs();
@@ -93,7 +94,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 allJobs = data.jobs || [];
                 lastUpdated.textContent = "Updated " + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             } else {
-                alert("Scraping completed with message: " + (data.error || "Done"));
+                alert("Scraping finished with message: " + (data.error || "Done"));
             }
         } catch (err) {
             console.error("Scrape error:", err);
@@ -124,13 +125,6 @@ document.addEventListener("DOMContentLoaded", () => {
         return src.includes("islamabad") || src.includes("pakistan") || loc.includes("islamabad") || loc.includes("rawalpindi") || loc.includes("pakistan") || title.includes("islamabad");
     }
 
-    // Helper: Is Remote Job
-    function isRemoteJob(job) {
-        const src = (job.source || "").toLowerCase();
-        const loc = (job.location || "").toLowerCase();
-        return src.includes("remote") || loc.includes("remote") || src.includes("weworkremotely") || src.includes("remotive") || src.includes("remoteok") || src.includes("jobspresso");
-    }
-
     // Render Filtered Jobs Grid
     function renderJobs() {
         let filtered = allJobs;
@@ -139,7 +133,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (activeTab === "local") {
             filtered = filtered.filter(j => isLocalJob(j));
         } else if (activeTab === "remote") {
-            filtered = filtered.filter(j => isRemoteJob(j));
+            filtered = filtered.filter(j => !isLocalJob(j));
         }
 
         // 2. Timeframe Filter
@@ -170,11 +164,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (filtered.length === 0) {
             jobsGrid.innerHTML = `
-                <div style="grid-column: 1 / -1; padding: 48px 20px; text-align: center; color: var(--text-secondary);">
-                    <p style="font-size: 16px; margin-bottom: 6px;">No job listings found for this filter</p>
-                    <p style="font-size: 13px; color: var(--text-tertiary);">Select "All Timeframes" or click "Search Latest Jobs" to fetch fresh positions.</p>
+                <div class="empty-state-box">
+                    <h4>No Job Listings Found for this Filter</h4>
+                    <p>Try changing your location tab or timeframe, or click below to fetch live listings directly from job platforms.</p>
+                    <button class="btn-search" id="emptyStateFetchBtn" style="margin-top: 8px;">
+                        ${refreshSvg}
+                        <span>Fetch Latest Jobs from Platforms</span>
+                    </button>
                 </div>
             `;
+
+            // Attach listener to empty state button
+            const emptyBtn = document.getElementById("emptyStateFetchBtn");
+            if (emptyBtn) {
+                emptyBtn.addEventListener("click", triggerLiveScrape);
+            }
             return;
         }
 
