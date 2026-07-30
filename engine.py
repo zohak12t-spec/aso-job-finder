@@ -80,27 +80,45 @@ class JobAutomationEngine:
         print(f"[Engine] Total Matched Jobs (Keyword Matrix): {len(matched_jobs)}")
         print(f"[Engine] New Unseen Jobs To Process: {len(new_unseen_jobs)}")
 
-        job_dicts = [j.to_dict() for j in new_unseen_jobs]
+        # Ensure web dashboard receives ALL matched jobs + stored history
+        all_matched_dicts = [j.to_dict() for j in matched_jobs]
+        stored_jobs_map = self.storage.seen_data
+        existing_urls = {j.get("link") or j.get("url") for j in all_matched_dicts if (j.get("link") or j.get("url"))}
+        
+        for job_hash, item in stored_jobs_map.items():
+            url = item.get("url") or item.get("link")
+            if url and url not in existing_urls:
+                all_matched_dicts.append({
+                    "title": item.get("title", "Saved Role"),
+                    "link": url,
+                    "url": url,
+                    "company": item.get("company", "Direct Employer"),
+                    "source": item.get("source", "Portal"),
+                    "matched_keywords": item.get("matched_keywords", ["ASO", "App Growth"]),
+                    "added_at": item.get("added_at")
+                })
+
+        new_job_dicts = [j.to_dict() for j in new_unseen_jobs]
 
         # Step 3: Generate Local File Outputs (HTML Dashboard & Markdown Report)
         if not self.dry_run:
-            print("\n[Engine] Generating Local File Outputs...")
-            generate_reports(job_dicts)
+            print(f"\n[Engine] Generating Local & Cloudflare File Outputs ({len(all_matched_dicts)} total active jobs)...")
+            generate_reports(all_matched_dicts)
 
-            # Optional Telegram Sending (skips gracefully if not configured)
+            # Optional Telegram Sending (only for new unseen jobs)
             print("\n[Engine] Checking Optional Telegram Alerts...")
-            send_telegram_batch(job_dicts)
+            send_telegram_batch(new_job_dicts)
 
             # Optional Email Digest Sending
-            send_email_digest(job_dicts)
+            send_email_digest(new_job_dicts)
 
             # Save seen state
             for job in new_unseen_jobs:
                 self.storage.add_job(job.link, title=job.title, source=job.source)
             self.storage.save()
         else:
-            print("\n[DRY RUN] Generating Local File Outputs Preview...")
-            generate_reports(job_dicts)
+            print(f"\n[DRY RUN] Generating Local File Outputs Preview ({len(all_matched_dicts)} total jobs)...")
+            generate_reports(all_matched_dicts)
 
         # Print Terminal Table / List Output
         print("\n" + "="*80)
