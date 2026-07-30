@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const resultsSummaryTitle = document.getElementById("resultsSummaryTitle");
 
     // SVG Icons
-    const companySvg = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>`;
+    const companySvg = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 4-4H8a4 4 0 0 4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>`;
     const locationSvg = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>`;
     const externalLinkSvg = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>`;
     const refreshSvg = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>`;
@@ -25,9 +25,11 @@ document.addEventListener("DOMContentLoaded", () => {
     loadSavedJobs();
 
     // Event Listener: Search Button
-    findJobsBtn.addEventListener("click", () => {
-        triggerLiveScrape();
-    });
+    if (findJobsBtn) {
+        findJobsBtn.addEventListener("click", () => {
+            triggerLiveScrape();
+        });
+    }
 
     // Event Listener: Tabs
     document.querySelectorAll(".tab-item").forEach(btn => {
@@ -77,9 +79,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Trigger Live Scrape API
     async function triggerLiveScrape() {
-        findJobsBtn.disabled = true;
-        btnSpinner.style.display = "inline-block";
-        loadingOverlay.classList.remove("hidden");
+        if (findJobsBtn) findJobsBtn.disabled = true;
+        if (btnSpinner) btnSpinner.style.display = "inline-block";
+        if (loadingOverlay) loadingOverlay.classList.remove("hidden");
 
         try {
             const res = await fetch("/api/scrape", {
@@ -92,29 +94,67 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (data.success) {
                 allJobs = data.jobs || [];
-                lastUpdated.textContent = "Updated " + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                if (lastUpdated) lastUpdated.textContent = "Updated " + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             } else {
-                alert("Scraping finished with message: " + (data.error || "Done"));
+                alert("Scraping finished: " + (data.error || "Done"));
             }
         } catch (err) {
             console.error("Scrape error:", err);
             alert("Connection error. Ensure app.py is running on http://localhost:5000.");
         } finally {
-            findJobsBtn.disabled = false;
-            btnSpinner.style.display = "none";
-            loadingOverlay.classList.add("hidden");
+            if (findJobsBtn) findJobsBtn.disabled = false;
+            if (btnSpinner) btnSpinner.style.display = "none";
+            if (loadingOverlay) loadingOverlay.classList.add("hidden");
             renderJobs();
         }
     }
 
+    // Helper: Formatter for Job Posting Date
+    function formatPostingDate(job) {
+        const raw = job.pub_date || job.added_at;
+        if (!raw) return 'Recently Posted';
+
+        const lower = String(raw).toLowerCase().trim();
+        if (lower.includes('ago') || lower.includes('just') || lower.includes('yesterday') || lower.includes('today')) {
+            return raw;
+        }
+
+        const parsed = new Date(raw);
+        if (!isNaN(parsed.getTime())) {
+            const now = new Date();
+            const diffMs = Math.abs(now - parsed);
+            const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+            if (diffDays === 0) return 'Posted Today';
+            if (diffDays === 1) return 'Posted 1 day ago';
+            if (diffDays <= 30) return `Posted ${diffDays} days ago`;
+
+            return 'Posted ' + parsed.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+        }
+        return raw;
+    }
+
     // Helper: Date Range Filter
-    function isWithinDays(addedAtStr, maxDays) {
-        if (!addedAtStr || maxDays === "all") return true;
-        const addedDate = new Date(addedAtStr);
-        const now = new Date();
-        const diffMs = Math.abs(now - addedDate);
-        const diffDays = diffMs / (1000 * 60 * 60 * 24);
-        return diffDays <= parseFloat(maxDays);
+    function isWithinDays(job, maxDays) {
+        if (maxDays === "all") return true;
+        const raw = job.pub_date || job.added_at;
+        if (!raw) return true;
+
+        const lower = String(raw).toLowerCase();
+        if (lower.includes('ago')) {
+            const match = lower.match(/(\d+)/);
+            if (match) {
+                const days = parseInt(match[1], 10);
+                return days <= parseFloat(maxDays);
+            }
+        }
+
+        const parsed = new Date(raw);
+        if (!isNaN(parsed.getTime())) {
+            const diffDays = Math.abs(new Date() - parsed) / (1000 * 60 * 60 * 24);
+            return diffDays <= parseFloat(maxDays);
+        }
+        return true;
     }
 
     // Helper: Is Local Job
@@ -138,7 +178,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // 2. Timeframe Filter
         if (selectedDays !== "all") {
-            filtered = filtered.filter(j => isWithinDays(j.added_at, selectedDays));
+            filtered = filtered.filter(j => isWithinDays(j, selectedDays));
         }
 
         // 3. Skill Filter
@@ -160,13 +200,15 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         }
 
-        resultsSummaryTitle.textContent = `${filtered.length} Job Opportunities Found`;
+        if (resultsSummaryTitle) {
+            resultsSummaryTitle.textContent = `${filtered.length} Job Opportunities Found`;
+        }
 
         if (filtered.length === 0) {
             jobsGrid.innerHTML = `
                 <div class="empty-state-box">
                     <h4>No Job Listings Found for this Filter</h4>
-                    <p>Try changing your location tab or timeframe, or click below to fetch live listings directly from job platforms.</p>
+                    <p>Try selecting another location tab or timeframe, or click below to search live platforms.</p>
                     <button class="btn-search" id="emptyStateFetchBtn" style="margin-top: 8px;">
                         ${refreshSvg}
                         <span>Fetch Latest Jobs from Platforms</span>
@@ -174,7 +216,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 </div>
             `;
 
-            // Attach listener to empty state button
             const emptyBtn = document.getElementById("emptyStateFetchBtn");
             if (emptyBtn) {
                 emptyBtn.addEventListener("click", triggerLiveScrape);
@@ -193,7 +234,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 <span class="skill-badge">${kw}</span>
             `).join("");
 
-            const dateStr = job.added_at ? new Date(job.added_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) : 'Recently Added';
+            const dateStr = formatPostingDate(job);
 
             return `
                 <div class="job-card">

@@ -9,7 +9,7 @@ REPORTS_DIR = BASE_DIR / "reports"
 def generate_reports(jobs: list) -> tuple:
     """
     Generates local jobs_report.html/md and standalone dist/index.html 
-    with static Cloudflare notification modal for platform scraping triggers.
+    with static Cloudflare notification modal and true job publication date formatting.
     """
     DIST_DIR.mkdir(exist_ok=True)
     REPORTS_DIR.mkdir(exist_ok=True)
@@ -221,7 +221,6 @@ def generate_reports(jobs: list) -> tuple:
 
             if (fetchJobsBtn) {{
                 fetchJobsBtn.addEventListener("click", () => {{
-                    // Try local REST API first, if fails show modal
                     fetch("/api/scrape", {{ method: "POST", headers: {{"Content-Type": "application/json"}}, body: JSON.stringify({{dry_run: false}}) }})
                     .then(res => res.json())
                     .then(data => {{ if (data.success) location.reload(); else showModal(); }})
@@ -267,10 +266,37 @@ def generate_reports(jobs: list) -> tuple:
             return s.includes("islamabad") || s.includes("pakistan") || l.includes("islamabad") || l.includes("rawalpindi") || l.includes("pakistan") || t.includes("islamabad");
         }}
 
-        function isWithinDays(addedAtStr, maxDays) {{
-            if (!addedAtStr || maxDays === "all") return true;
-            const diffDays = Math.abs(new Date() - new Date(addedAtStr)) / (1000 * 60 * 60 * 24);
-            return diffDays <= parseFloat(maxDays);
+        function formatPostingDate(job) {{
+            const raw = job.pub_date || job.added_at;
+            if (!raw) return 'Recently Posted';
+            const lower = String(raw).toLowerCase().trim();
+            if (lower.includes('ago') || lower.includes('just') || lower.includes('yesterday') || lower.includes('today')) return raw;
+            const parsed = new Date(raw);
+            if (!isNaN(parsed.getTime())) {{
+                const diffDays = Math.floor(Math.abs(new Date() - parsed) / (1000 * 60 * 60 * 24));
+                if (diffDays === 0) return 'Posted Today';
+                if (diffDays === 1) return 'Posted 1 day ago';
+                if (diffDays <= 30) return `Posted ${{diffDays}} days ago`;
+                return 'Posted ' + parsed.toLocaleDateString(undefined, {{ month: 'short', day: 'numeric', year: 'numeric' }});
+            }}
+            return raw;
+        }}
+
+        function isWithinDays(job, maxDays) {{
+            if (maxDays === "all") return true;
+            const raw = job.pub_date || job.added_at;
+            if (!raw) return true;
+            const lower = String(raw).toLowerCase();
+            if (lower.includes('ago')) {{
+                const match = lower.match(/(\\d+)/);
+                if (match) return parseInt(match[1], 10) <= parseFloat(maxDays);
+            }}
+            const parsed = new Date(raw);
+            if (!isNaN(parsed.getTime())) {{
+                const diffDays = Math.abs(new Date() - parsed) / (1000 * 60 * 60 * 24);
+                return diffDays <= parseFloat(maxDays);
+            }}
+            return true;
         }}
 
         function render() {{
@@ -278,7 +304,7 @@ def generate_reports(jobs: list) -> tuple:
             if (activeTab === "local") filtered = filtered.filter(j => isLocal(j));
             else if (activeTab === "remote") filtered = filtered.filter(j => !isLocal(j));
 
-            if (selectedDays !== "all") filtered = filtered.filter(j => isWithinDays(j.added_at, selectedDays));
+            if (selectedDays !== "all") filtered = filtered.filter(j => isWithinDays(j, selectedDays));
             if (activeKw !== "all") {{
                 filtered = filtered.filter(j => {{
                     const t = (j.title || "").toLowerCase();
@@ -317,7 +343,7 @@ def generate_reports(jobs: list) -> tuple:
                 const location = j.location || (isLocal(j) ? "Islamabad / Rawalpindi, Pakistan" : "Remote Position");
                 const source = j.source || "LinkedIn";
                 const skills = (j.matched_keywords || []).map(k => `<span class="skill-badge">${{k}}</span>`).join("");
-                const date = j.added_at ? new Date(j.added_at).toLocaleDateString(undefined, {{month:'short', day:'numeric', year:'numeric'}}) : 'Fresh';
+                const dateStr = formatPostingDate(j);
 
                 return `
                     <div class="job-card">
@@ -329,7 +355,7 @@ def generate_reports(jobs: list) -> tuple:
                             <div class="skills-list">${{skills}}</div>
                         </div>
                         <div class="card-footer">
-                            <span class="date-text">${{date}}</span>
+                            <span class="date-text">${{dateStr}}</span>
                             <a href="${{link}}" target="_blank" class="btn-apply">Apply Now ➔</a>
                         </div>
                     </div>

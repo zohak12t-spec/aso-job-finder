@@ -94,6 +94,7 @@ class JobAutomationEngine:
                     "url": url,
                     "company": item.get("company", "Direct Employer"),
                     "source": item.get("source", "Portal"),
+                    "pub_date": item.get("pub_date", ""),
                     "matched_keywords": item.get("matched_keywords", ["ASO", "App Growth"]),
                     "added_at": item.get("added_at")
                 })
@@ -112,9 +113,16 @@ class JobAutomationEngine:
             # Optional Email Digest Sending
             send_email_digest(new_job_dicts)
 
-            # Save seen state
+            # Save seen state with publication date
             for job in new_unseen_jobs:
-                self.storage.add_job(job.link, title=job.title, source=job.source)
+                self.storage.add_job(
+                    job.link,
+                    title=job.title,
+                    source=job.source,
+                    pub_date=job.pub_date,
+                    company=job.company,
+                    matched_keywords=job.matched_keywords
+                )
             self.storage.save()
         else:
             print(f"\n[DRY RUN] Generating Local File Outputs Preview ({len(all_matched_dicts)} total jobs)...")

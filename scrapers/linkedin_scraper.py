@@ -60,6 +60,11 @@ class LinkedInScraper(BaseScraper):
                     company = comp_elem.text.strip() if comp_elem else "LinkedIn Employer"
                     location = loc_elem.text.strip() if loc_elem else loc
 
+                    time_elem = card.select_one("time")
+                    pub_date = ""
+                    if time_elem:
+                        pub_date = time_elem.get("datetime") or time_elem.text.strip()
+
                     if title and link and "linkedin.com/jobs" in link:
                         found_jobs.append(
                             Job(
@@ -68,6 +73,7 @@ class LinkedInScraper(BaseScraper):
                                 source=f"LinkedIn ({loc})",
                                 company=company,
                                 location=location,
+                                pub_date=pub_date,
                                 description=f"Position: {title} | Location: {location}"
                             )
                         )

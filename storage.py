@@ -60,14 +60,17 @@ class StorageManager:
         h = self.generate_hash(identifier)
         return h in self.seen_data
 
-    def add_job(self, identifier: str, title: str = "", source: str = ""):
-        """Adds a job to the seen data store."""
+    def add_job(self, identifier: str, title: str = "", source: str = "", pub_date: str = "", company: str = "", matched_keywords: list = None):
+        """Adds a job to the seen data store with actual publication date."""
         h = self.generate_hash(identifier)
         self.seen_data[h] = {
             "url": identifier,
             "title": title,
             "source": source,
-            "added_at": datetime.now(timezone.utc).isoformat()
+            "company": company,
+            "pub_date": pub_date,
+            "matched_keywords": matched_keywords or [],
+            "added_at": pub_date if pub_date else datetime.now(timezone.utc).isoformat()
         }
 
     def save(self):
