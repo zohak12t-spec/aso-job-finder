@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASO & App Growth Jobs</title>
+    <!-- Inter & Plus Jakarta Sans Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="app-layout">
+        <!-- Minimal Human Header -->
+        <header class="app-header">
+            <div class="header-container">
+                <div class="brand">
+                    <div class="brand-logo">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                        </svg>
+                    </div>
+                    <div class="brand-text">
+                        <h2>ASO & App Growth Jobs</h2>
+                        <p>Curated roles for Islamabad, Rawalpindi, and Remote</p>
+                    </div>
+                </div>
+
+                <!-- Primary Action Button -->
+                <div class="action-wrapper">
+                    <button id="findJobsBtn" class="btn-search">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                        <span class="btn-label">Search Latest Jobs</span>
+                        <span class="btn-loader" id="btnSpinner"></span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Workspace -->
+        <main class="main-content">
+            <!-- Filter & Search Toolbar -->
+            <div class="toolbar-panel">
+                <div class="toolbar-left">
+                    <!-- Location Tabs -->
+                    <div class="tab-group">
+                        <button class="tab-item active" data-tab="all">All Jobs</button>
+                        <button class="tab-item" data-tab="local">Islamabad & Rawalpindi</button>
+                        <button class="tab-item" data-tab="remote">Remote Roles</button>
+                    </div>
+                </div>
+
+                <div class="toolbar-right">
+                    <!-- Timeframe Select -->
+                    <div class="select-wrapper">
+                        <select id="dateFilter" class="select-input">
+                            <option value="all">All Timeframes</option>
+                            <option value="1">Past 24 Hours</option>
+                            <option value="3">Past 3 Days</option>
+                            <option value="7">Past 7 Days</option>
+                            <option value="14">Past 14 Days</option>
+                            <option value="30">Past 30 Days</option>
+                        </select>
+                    </div>
+
+                    <!-- Search Input -->
+                    <div class="search-input-box">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                        <input type="text" id="searchInput" placeholder="Filter by title or company...">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Skill Tags Quick Bar -->
+            <div class="tags-filter-row">
+                <span class="tags-title">Skills:</span>
+                <div class="chips-list">
+                    <button class="chip-item active" data-kw="all">All Skills</button>
+                    <button class="chip-item" data-kw="aso">ASO</button>
+                    <button class="chip-item" data-kw="user acquisition">User Acquisition</button>
+                    <button class="chip-item" data-kw="app growth">App Growth</button>
+                    <button class="chip-item" data-kw="play store">Play Console</button>
+                    <button class="chip-item" data-kw="monetization">AdMob & Monetization</button>
+                    <button class="chip-item" data-kw="app publisher">App Publisher</button>
+                </div>
+            </div>
+
+            <!-- Job Results Section -->
+            <section class="results-container">
+                <div class="results-header">
+                    <h3 id="resultsSummaryTitle">Matching Job Opportunities</h3>
+                    <span class="status-meta" id="lastUpdated">Updated just now</span>
+                </div>
+
+                <!-- Loading State Indicator -->
+                <div id="loadingOverlay" class="loading-panel hidden">
+                    <div class="loading-spinner"></div>
+                    <p class="loading-text">Fetching latest job listings...</p>
+                </div>
+
+                <!-- Job Cards Grid -->
+                <div id="jobsGrid" class="cards-grid">
+                    <!-- Injected by JavaScript -->
+                </div>
+            </section>
+        </main>
+
+        <footer class="app-footer">
+            <p>ASO & Mobile Growth Career Dashboard</p>
+        </footer>
+    </div>
+
+    <!-- Script -->
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
