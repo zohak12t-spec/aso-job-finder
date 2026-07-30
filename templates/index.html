@@ -4,10 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ASO & App Growth Jobs</title>
-    <!-- Inter & Plus Jakarta Sans Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Favicon App Icon -->
     <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
     <link rel="apple-touch-icon" href="{{ url_for('static', filename='favicon.svg') }}">
@@ -72,6 +68,30 @@
                 </div>
 
                 <div class="toolbar-right">
+                    <!-- Workplace Type Select -->
+                    <div class="select-wrapper">
+                        <select id="worktypeFilter" class="select-input">
+                            <option value="all">All Workplace Types</option>
+                            <option value="onsite">On-site</option>
+                            <option value="remote">Remote</option>
+                            <option value="hybrid">Hybrid</option>
+                        </select>
+                    </div>
+
+                    <!-- Platform Select -->
+                    <div class="select-wrapper">
+                        <select id="platformFilter" class="select-input">
+                            <option value="all">All Platforms</option>
+                            <option value="linkedin">LinkedIn</option>
+                            <option value="bayt">Bayt.com</option>
+                            <option value="glassdoor">Glassdoor</option>
+                            <option value="mustakbil">Mustakbil</option>
+                            <option value="himalayas">Himalayas</option>
+                            <option value="rss">WeWorkRemotely / RSS</option>
+                            <option value="api">RemoteOK / APIs</option>
+                        </select>
+                    </div>
+
                     <!-- Timeframe Select -->
                     <div class="select-wrapper">
                         <select id="dateFilter" class="select-input">
@@ -90,7 +110,7 @@
                             <circle cx="11" cy="11" r="8"></circle>
                             <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                         </svg>
-                        <input type="text" id="searchInput" placeholder="Filter by title or company...">
+                        <input type="text" id="searchInput" placeholder="Filter title or company...">
                     </div>
                 </div>
             </div>

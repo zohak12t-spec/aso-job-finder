@@ -9,7 +9,7 @@ REPORTS_DIR = BASE_DIR / "reports"
 def generate_reports(jobs: list) -> tuple:
     """
     Generates local jobs_report.html/md and standalone dist/index.html 
-    with static Cloudflare notification modal and true job publication date formatting.
+    with Microsoft Clarity tracking, new Bayt/Glassdoor/Himalayas scrapers, and Workplace/Platform dropdown filters.
     """
     DIST_DIR.mkdir(exist_ok=True)
     REPORTS_DIR.mkdir(exist_ok=True)
@@ -162,6 +162,26 @@ def generate_reports(jobs: list) -> tuple:
                 </div>
                 <div class="toolbar-right">
                     <div class="select-wrapper">
+                        <select id="worktypeFilter" class="select-input">
+                            <option value="all">All Workplace Types</option>
+                            <option value="onsite">On-site</option>
+                            <option value="remote">Remote</option>
+                            <option value="hybrid">Hybrid</option>
+                        </select>
+                    </div>
+                    <div class="select-wrapper">
+                        <select id="platformFilter" class="select-input">
+                            <option value="all">All Platforms</option>
+                            <option value="linkedin">LinkedIn</option>
+                            <option value="bayt">Bayt.com</option>
+                            <option value="glassdoor">Glassdoor</option>
+                            <option value="mustakbil">Mustakbil</option>
+                            <option value="himalayas">Himalayas</option>
+                            <option value="rss">WeWorkRemotely / RSS</option>
+                            <option value="api">RemoteOK / APIs</option>
+                        </select>
+                    </div>
+                    <div class="select-wrapper">
                         <select id="dateFilter" class="select-input">
                             <option value="all">All Timeframes</option>
                             <option value="1">Past 24 Hours</option>
@@ -204,7 +224,6 @@ def generate_reports(jobs: list) -> tuple:
         </footer>
     </div>
 
-    <!-- Modal Popup for Cloudflare static environment -->
     <div id="statusModal" class="modal-overlay">
         <div class="modal-box">
             <h3>Cloud Automated Fetch</h3>
@@ -220,10 +239,14 @@ def generate_reports(jobs: list) -> tuple:
         let activeTab = "all";
         let activeKw = "all";
         let selectedDays = "all";
+        let selectedWorktype = "all";
+        let selectedPlatform = "all";
         let searchQuery = "";
 
         document.addEventListener("DOMContentLoaded", () => {{
             const dateFilter = document.getElementById("dateFilter");
+            const worktypeFilter = document.getElementById("worktypeFilter");
+            const platformFilter = document.getElementById("platformFilter");
             const searchInput = document.getElementById("searchInput");
             const fetchJobsBtn = document.getElementById("fetchJobsBtn");
 
@@ -245,7 +268,10 @@ def generate_reports(jobs: list) -> tuple:
                 }});
             }});
 
-            dateFilter.addEventListener("change", (e) => {{ selectedDays = e.target.value; render(); }});
+            if (worktypeFilter) worktypeFilter.addEventListener("change", (e) => {{ selectedWorktype = e.target.value; render(); }});
+            if (platformFilter) platformFilter.addEventListener("change", (e) => {{ selectedPlatform = e.target.value; render(); }});
+            if (dateFilter) dateFilter.addEventListener("change", (e) => {{ selectedDays = e.target.value; render(); }});
+
             document.querySelectorAll(".chip-item").forEach(c => {{
                 c.addEventListener("click", () => {{
                     document.querySelectorAll(".chip-item").forEach(i => i.classList.remove("active"));
@@ -255,7 +281,7 @@ def generate_reports(jobs: list) -> tuple:
                 }});
             }});
 
-            searchInput.addEventListener("input", (e) => {{ searchQuery = e.target.value.toLowerCase().trim(); render(); }});
+            if (searchInput) searchInput.addEventListener("input", (e) => {{ searchQuery = e.target.value.toLowerCase().trim(); render(); }});
             render();
         }});
 
@@ -272,6 +298,31 @@ def generate_reports(jobs: list) -> tuple:
             const l = (j.location || "").toLowerCase();
             const t = (j.title || "").toLowerCase();
             return s.includes("islamabad") || s.includes("pakistan") || l.includes("islamabad") || l.includes("rawalpindi") || l.includes("pakistan") || t.includes("islamabad");
+        }}
+
+        function matchWorkType(j, typeFilter) {{
+            if (typeFilter === "all") return true;
+            const t = (j.title || "").toLowerCase();
+            const l = (j.location || "").toLowerCase();
+            const s = (j.source || "").toLowerCase();
+
+            if (typeFilter === "remote") return l.includes("remote") || s.includes("remote") || t.includes("remote") || !isLocal(j);
+            if (typeFilter === "hybrid") return l.includes("hybrid") || t.includes("hybrid");
+            if (typeFilter === "onsite") return (isLocal(j) || l.includes("onsite") || l.includes("islamabad") || l.includes("rawalpindi")) && !l.includes("remote");
+            return true;
+        }}
+
+        function matchPlatform(j, platformFilter) {{
+            if (platformFilter === "all") return true;
+            const s = (j.source || "").toLowerCase();
+            if (platformFilter === "linkedin") return s.includes("linkedin");
+            if (platformFilter === "bayt") return s.includes("bayt");
+            if (platformFilter === "glassdoor") return s.includes("glassdoor");
+            if (platformFilter === "mustakbil") return s.includes("mustakbil");
+            if (platformFilter === "himalayas") return s.includes("himalayas");
+            if (platformFilter === "rss") return s.includes("wework") || s.includes("remotive") || s.includes("rss");
+            if (platformFilter === "api") return s.includes("remoteok") || s.includes("api");
+            return true;
         }}
 
         function formatPostingDate(job) {{
@@ -334,7 +385,10 @@ def generate_reports(jobs: list) -> tuple:
             if (activeTab === "local") filtered = filtered.filter(j => isLocal(j));
             else if (activeTab === "remote") filtered = filtered.filter(j => !isLocal(j));
 
+            if (selectedWorktype !== "all") filtered = filtered.filter(j => matchWorkType(j, selectedWorktype));
+            if (selectedPlatform !== "all") filtered = filtered.filter(j => matchPlatform(j, selectedPlatform));
             if (selectedDays !== "all") filtered = filtered.filter(j => isWithinDays(j, selectedDays));
+
             if (activeKw !== "all") {{
                 filtered = filtered.filter(j => {{
                     const t = (j.title || "").toLowerCase();
@@ -356,7 +410,7 @@ def generate_reports(jobs: list) -> tuple:
                 grid.innerHTML = `
                     <div class="empty-state-box">
                         <h4>No Job Listings Found for this Filter</h4>
-                        <p>Try changing your location tab or timeframe, or click below to refresh live listings.</p>
+                        <p>Try selecting another platform, workplace type, or timeframe, or click below to refresh live listings.</p>
                         <button class="btn-search" onclick="location.reload()" style="margin-top: 8px;">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
                             <span>Fetch Latest Jobs from Platforms</span>

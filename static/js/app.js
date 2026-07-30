@@ -3,6 +3,8 @@ document.addEventListener("DOMContentLoaded", () => {
     let activeTab = "all";
     let activeKw = "all";
     let selectedDays = "all";
+    let selectedWorktype = "all";
+    let selectedPlatform = "all";
     let searchQuery = "";
 
     // DOM Elements
@@ -12,6 +14,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const loadingOverlay = document.getElementById("loadingOverlay");
     const searchInput = document.getElementById("searchInput");
     const dateFilter = document.getElementById("dateFilter");
+    const worktypeFilter = document.getElementById("worktypeFilter");
+    const platformFilter = document.getElementById("platformFilter");
     const lastUpdated = document.getElementById("lastUpdated");
     const resultsSummaryTitle = document.getElementById("resultsSummaryTitle");
 
@@ -31,7 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Event Listener: Tabs
+    // Event Listener: Location Tabs
     document.querySelectorAll(".tab-item").forEach(btn => {
         btn.addEventListener("click", () => {
             document.querySelectorAll(".tab-item").forEach(b => b.classList.remove("active"));
@@ -40,6 +44,22 @@ document.addEventListener("DOMContentLoaded", () => {
             renderJobs();
         });
     });
+
+    // Event Listener: Workplace Type Filter
+    if (worktypeFilter) {
+        worktypeFilter.addEventListener("change", (e) => {
+            selectedWorktype = e.target.value;
+            renderJobs();
+        });
+    }
+
+    // Event Listener: Platform Filter
+    if (platformFilter) {
+        platformFilter.addEventListener("change", (e) => {
+            selectedPlatform = e.target.value;
+            renderJobs();
+        });
+    }
 
     // Event Listener: Date Filter
     if (dateFilter) {
@@ -121,12 +141,10 @@ document.addEventListener("DOMContentLoaded", () => {
         const str = String(raw).trim();
         const lower = str.toLowerCase();
 
-        // Platform relative strings (e.g. "2 days ago", "3 weeks ago", "1 day ago", "Just posted")
         if (lower.includes('ago') || lower.includes('just') || lower.includes('yesterday') || lower.includes('today')) {
             return str.charAt(0).toUpperCase() + str.slice(1);
         }
 
-        // Standard date string parsing (e.g. "2026-07-28" or ISO string)
         const parsed = new Date(str);
         if (!isNaN(parsed.getTime())) {
             const now = new Date();
@@ -191,6 +209,40 @@ document.addEventListener("DOMContentLoaded", () => {
         return src.includes("islamabad") || src.includes("pakistan") || loc.includes("islamabad") || loc.includes("rawalpindi") || loc.includes("pakistan") || title.includes("islamabad");
     }
 
+    // Helper: Match Workplace Type
+    function matchWorkType(job, typeFilter) {
+        if (typeFilter === "all") return true;
+        const title = (job.title || "").toLowerCase();
+        const loc = (job.location || "").toLowerCase();
+        const src = (job.source || "").toLowerCase();
+
+        if (typeFilter === "remote") {
+            return loc.includes("remote") || src.includes("remote") || title.includes("remote") || !isLocalJob(job);
+        }
+        if (typeFilter === "hybrid") {
+            return loc.includes("hybrid") || title.includes("hybrid");
+        }
+        if (typeFilter === "onsite") {
+            return (isLocalJob(job) || loc.includes("onsite") || loc.includes("islamabad") || loc.includes("rawalpindi")) && !loc.includes("remote");
+        }
+        return true;
+    }
+
+    // Helper: Match Platform
+    function matchPlatform(job, platformFilter) {
+        if (platformFilter === "all") return true;
+        const src = (job.source || "").toLowerCase();
+
+        if (platformFilter === "linkedin") return src.includes("linkedin");
+        if (platformFilter === "bayt") return src.includes("bayt");
+        if (platformFilter === "glassdoor") return src.includes("glassdoor");
+        if (platformFilter === "mustakbil") return src.includes("mustakbil");
+        if (platformFilter === "himalayas") return src.includes("himalayas");
+        if (platformFilter === "rss") return src.includes("wework") || src.includes("remotive") || src.includes("rss");
+        if (platformFilter === "api") return src.includes("remoteok") || src.includes("api");
+        return true;
+    }
+
     // Render Filtered Jobs Grid
     function renderJobs() {
         let filtered = allJobs;
@@ -202,12 +254,22 @@ document.addEventListener("DOMContentLoaded", () => {
             filtered = filtered.filter(j => !isLocalJob(j));
         }
 
-        // 2. Timeframe Filter
+        // 2. Workplace Type Filter
+        if (selectedWorktype !== "all") {
+            filtered = filtered.filter(j => matchWorkType(j, selectedWorktype));
+        }
+
+        // 3. Platform Filter
+        if (selectedPlatform !== "all") {
+            filtered = filtered.filter(j => matchPlatform(j, selectedPlatform));
+        }
+
+        // 4. Timeframe Filter
         if (selectedDays !== "all") {
             filtered = filtered.filter(j => isWithinDays(j, selectedDays));
         }
 
-        // 3. Skill Filter
+        // 5. Skill Filter
         if (activeKw !== "all") {
             filtered = filtered.filter(j => {
                 const title = (j.title || "").toLowerCase();
@@ -216,7 +278,7 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         }
 
-        // 4. Search Bar Query
+        // 6. Search Bar Query
         if (searchQuery) {
             filtered = filtered.filter(j => {
                 const title = (j.title || "").toLowerCase();
@@ -234,7 +296,7 @@ document.addEventListener("DOMContentLoaded", () => {
             jobsGrid.innerHTML = `
                 <div class="empty-state-box">
                     <h4>No Job Listings Found for this Filter</h4>
-                    <p>Try selecting another location tab or timeframe, or click below to search live platforms.</p>
+                    <p>Try selecting another platform, workplace type, or timeframe, or click below to search live platforms.</p>
                     <button class="btn-search" id="emptyStateFetchBtn" style="margin-top: 8px;">
                         ${refreshSvg}
                         <span>Fetch Latest Jobs from Platforms</span>
