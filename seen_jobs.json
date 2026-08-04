@@ -247,5 +247,39 @@
       "user acquisition"
     ],
     "added_at": "2026-07-27"
+  },
+  "98873a8ff5e60153c368311dda0bc964": {
+    "url": "https://pk.linkedin.com/jobs/view/app-store-optimization-at-nah-collection-4446611130",
+    "title": "App Store Optimization",
+    "source": "LinkedIn (Pakistan)",
+    "company": "NAH Collection",
+    "pub_date": "2026-08-04",
+    "matched_keywords": [
+      "app store optimization"
+    ],
+    "added_at": "2026-08-04"
+  },
+  "2f04235516aab6dfade62a15affbc2e6": {
+    "url": "https://pk.linkedin.com/jobs/view/aso-executive-at-ozi-publishing-4445875740",
+    "title": "ASO Executive",
+    "source": "LinkedIn (Pakistan)",
+    "company": "OZI Publishing",
+    "pub_date": "2026-08-03",
+    "matched_keywords": [
+      "aso",
+      "aso executive"
+    ],
+    "added_at": "2026-08-03"
+  },
+  "599364db952e46e7c1daa782ebef4b4d": {
+    "url": "https://il.linkedin.com/jobs/view/user-acquisition-manager-at-guardio-4437192891",
+    "title": "User Acquisition Manager",
+    "source": "LinkedIn (Remote)",
+    "company": "Guardio",
+    "pub_date": "2026-07-06",
+    "matched_keywords": [
+      "user acquisition"
+    ],
+    "added_at": "2026-07-06"
   }
 }
